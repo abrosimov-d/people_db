@@ -31,6 +31,7 @@ class Dialog():
         self.notebook = None
         self.toolbar = None
         self.frame = self.root
+        self.root.protocol('WM_DELETE_WINDOW', self.on_closing)
 
     def template(self, template):
         lines = template.split('\n')
@@ -114,18 +115,18 @@ class Dialog():
                         self.toolbar = tk.Frame(self.root, bg=self.BG)
                         self.toolbar.pack(side=tk.LEFT, anchor='n', fill='x')
 
-                    button1 = tk.Button(self.toolbar, text=element['text'], font=self.BIGFONT, command=lambda id=int(element['values'][0]):self.on_event_click(id), bg=self.BG3, fg=self.FG, relief="flat", bd=0, cursor='hand2')
-                    button1.pack(side=tk.TOP, anchor='w',)
-                    button1.bind("<Enter>", self.on_enter) 
-                    button1.bind("<Leave>", self.on_leave)
+                    button = tk.Button(self.toolbar, text=element['text'], font=self.BIGFONT, command=lambda id=int(element['values'][0]):self.on_toolbar_click(id), bg=self.BG3, fg=self.FG, relief="flat", bd=0, cursor='hand2')
+                    button.pack(side=tk.TOP, anchor='w',)
+                    button.bind("<Enter>", self.on_enter) 
+                    button.bind("<Leave>", self.on_leave)
 
                     if self.notebook == None:
                         self.notebook = ttk.Notebook(self.root, style='TNotebook')
                         self.notebook.pack(fill='both', expand=True, anchor='e', side = tk.RIGHT)
+
                     self.frame = tk.Frame(self.notebook, bg=self.BG, bd=0, relief='flat')
                     self.frame.pack(fill='both')#, expand=True)
                     self.notebook.add(self.frame, text='qwe')#, state='hidden')
-                    pass
 
                 case _:
                     pass
@@ -142,19 +143,24 @@ class Dialog():
     
     def set_data_to_treeview(self, id, data):
         tree = self.get_element_by_id(id)
+        for item in tree['object'].get_children(): 
+            tree['object'].delete(item)
         if tree != None:
             for item in data:
                 tree['object'].insert('', 'end', values=item)
 
     def on_event_click(self, id):
         self.event_listener('click', id, None)
+    
+    def on_toolbar_click(self, id):
+        self.set_active_tab(id)
 
     def on_event_key(self, event, id):
         element = self.get_element_by_id(id)
         element['text'] = element['object'].get()
         self.event_listener('key', id, event)
 
-    def set_event_listner(self, listener):
+    def set_event_listener(self, listener):
         self.event_listener = listener
 
     def get_text_by_id(self, id):
@@ -168,11 +174,17 @@ class Dialog():
 
         if element['type'] in ('label', 'xlabel', 'slabel'):
             element['object'].configure(text=text)
-        else:
+                
+        if element['type'] == 'input':
             element['object'].delete(0, tk.END)
             element['object'].insert(0, text)
+            self.event_listener('key', id, '')
+
+        if element['type'] == 'button':
+            element['object'].config(text=text)
 
     def run(self):
+        self.event_listener('init', 0, 0)
         self.root.mainloop()
 
     def on_enter(self, event):
@@ -191,3 +203,8 @@ class Dialog():
 
     def set_active_tab(self, index):
         self.notebook.select(index)
+        self.event_listener('tab', index, 0)
+
+    def on_closing(self):
+        if self.event_listener('close', 0, 0):
+            self.root.destroy()
