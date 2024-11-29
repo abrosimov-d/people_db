@@ -55,5 +55,9 @@ class App():
             elif event['action'] == 'exit':
                 self.db.close()
                 return True
+            
+            elif event['action'] == 'delete':
+                print(event['data'])
+                self.db.delete_data(self.table, event['data'][0])
 
         return self.db.get_data(self.table)

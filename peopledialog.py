@@ -3,6 +3,7 @@ from helper import Helper
 
 ID_BUTTON_ADD = Helper.random_id()
 ID_TREVIEW_PEOPLE = Helper.random_id()
+ID_BUTTON_DELETE = Helper.random_id()
 ID_BUTTON_DROPALL = Helper.random_id()
 ID_BUTTON_SAVE = Helper.random_id()
 ID_INPUT_FIRSTNAME = Helper.random_id()
@@ -13,7 +14,7 @@ ID_LABEL_ERROR = Helper.random_id()
 
 class PeopleDialog(Dialog):
     def __init__(self, on_event_listener):
-        super().__init__()
+        super().__init__(None)
         self.__on_event_listener = on_event_listener
 
         template = f'''
@@ -21,6 +22,7 @@ class PeopleDialog(Dialog):
         header, 🚀PEOPLE_DB, 0, 0
         tab, DB, 0, 0
         button, add, {ID_BUTTON_ADD}, 0
+        button, delete, {ID_BUTTON_DELETE}, 0        
         button, drop table, {ID_BUTTON_DROPALL}, 0
         treeview, 0, {ID_TREVIEW_PEOPLE}, id, firstname, lastname, age
         
@@ -42,6 +44,13 @@ class PeopleDialog(Dialog):
         button, fill random, {ID_BUTTON_RANDOM}, 0  
         button, cancel, {ID_BUTTON_SAVE}, 0  
         slabel,,{ID_LABEL_ERROR},0
+ 
+        tab, AB, 0, 2
+        xlabel, PEOPLE_DB, 0, 0
+        label, final assignment for python course, 0, 0
+        label, used: tkinter • sqlite3, 0, 0 
+        label, date: XX.11.2024, 0, 0
+        urlpyt  button, https://github.com/abrosimov-d/people_db, 0, 0
 
 '''
         super().template(template)
@@ -54,6 +63,7 @@ class PeopleDialog(Dialog):
             event = {}
             data = self.__on_event_listener(event)
             self.set_data_to_treeview(ID_TREVIEW_PEOPLE, data)
+            self.set_enable_by_id(ID_BUTTON_DELETE, False)
         
         if event == 'click' and id == ID_BUTTON_ADD:
             self.set_active_tab(1)
@@ -113,4 +123,18 @@ class PeopleDialog(Dialog):
             event = {}
             event['action'] = 'exit'
             return self.__on_event_listener(event)
-            
+        
+        if event == 'select':
+            if event_data != None:
+                self.set_text_by_id(ID_BUTTON_DELETE, f'delete {event_data[1]} {event_data[2]} ({event_data[3]})')
+            else:
+                self.set_text_by_id(ID_BUTTON_DELETE, 'delete')
+            self.set_enable_by_id(ID_BUTTON_DELETE, event_data != None)
+
+        if event == 'click' and id == ID_BUTTON_DELETE:
+            event = {}
+            data = {}
+            event['action'] = 'delete'
+            event['data'] = self.get_item_selected(ID_TREVIEW_PEOPLE)
+            data = self.__on_event_listener(event)
+            self.set_data_to_treeview(ID_TREVIEW_PEOPLE, data)

@@ -45,3 +45,5 @@ initial_data = [
     {"first_name": "Мария", "last_name": "Петрова", "age": 25},
 
     {"first_name": "Алексей", "last_name": "Сидоров", "age": 40}
+
+]

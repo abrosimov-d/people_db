@@ -26,9 +26,11 @@ class DB():
     def update_data(self, data):
         pass
 
-    def delete_data(self, data):
-        pass
-
+    def delete_data(self, table, id):
+        query = f'DELETE FROM {table} WHERE id = ?'
+        print(query, id)
+        self.cursor.execute(query, (id,))
+                                                                                                                                                                                                                                                                                       
     def drop_table(self, table):
         query = f'DROP TABLE {table}'
         self.cursor.execute(query)
