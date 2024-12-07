@@ -50,7 +50,7 @@ class PeopleDialog(Dialog):
         xlabel, PEOPLE_DB, 0, 0
         label, final assignment for python course, 0, 0
         label, used: tkinter • sqlite3, 0, 0 
-        label, date: XX.11.2024, 0, 0
+        label, date: 07.12.2024, 0, 0
         urlbutton, https://github.com/abrosimov-d/people_db, 0, 0
 
 '''
@@ -136,7 +136,7 @@ class PeopleDialog(Dialog):
             self.set_enable_by_id(ID_BUTTON_DELETE, event_data != None)
 
         if event == 'click' and id == ID_BUTTON_DELETE:
-            yesno = YesNoDialog(self, 'WARNING!', f'are you sure?')
+            yesno = YesNoDialog(self, '', f'are you sure delete?')
             if yesno.show():
                 event = {}
                 event['action'] = 'delete'

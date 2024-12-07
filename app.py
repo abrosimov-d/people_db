@@ -1,4 +1,3 @@
-from helper import Helper
 from peopledialog import PeopleDialog
 from people import People
 

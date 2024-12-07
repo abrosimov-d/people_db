@@ -24,20 +24,20 @@ class People():
                 self.db.insert_data(self.table, data)
 
         self.methods = [
+            {'name':'get', 'function': self.get},
             {'name':'add', 'function': self.add},
             {'name':'delete', 'function': self.delete_by_id},
             {'name':'check', 'function': self.check},
             {'name':'exit', 'function': self.free},
-            {'name':'get', 'function': self.get},
         ]
 
     def call_method_by_name(self, method_name, arg):
         for method in self.methods:
             if method_name == method['name']:
-                if arg != None:
-                    return method['function'](arg)
-                else:
+                if arg == None:
                     return method['function']()
+                else:
+                    return method['function'](arg)
 
     def add(self, data):
         self.db.insert_data(self.table, data)
