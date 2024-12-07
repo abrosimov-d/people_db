@@ -1,5 +1,6 @@
 from dialog import Dialog
 from helper import Helper
+from yesnodialog import YesNoDialog
 
 ID_BUTTON_ADD = Helper.random_id()
 ID_TREVIEW_PEOPLE = Helper.random_id()
@@ -23,7 +24,7 @@ class PeopleDialog(Dialog):
         tab, DB, 0, 0
         button, add, {ID_BUTTON_ADD}, 0
         button, delete, {ID_BUTTON_DELETE}, 0        
-        button, drop table, {ID_BUTTON_DROPALL}, 0
+        -button, drop table, {ID_BUTTON_DROPALL}, 0
         treeview, 0, {ID_TREVIEW_PEOPLE}, id, firstname, lastname, age
         
         tab, ED, 0, 1
@@ -50,7 +51,7 @@ class PeopleDialog(Dialog):
         label, final assignment for python course, 0, 0
         label, used: tkinter • sqlite3, 0, 0 
         label, date: XX.11.2024, 0, 0
-        urlpyt  button, https://github.com/abrosimov-d/people_db, 0, 0
+        urlbutton, https://github.com/abrosimov-d/people_db, 0, 0
 
 '''
         super().template(template)
@@ -61,6 +62,8 @@ class PeopleDialog(Dialog):
 
         if event == 'init':
             event = {}
+            event['action'] = 'get'
+            event['data'] = None
             data = self.__on_event_listener(event)
             self.set_data_to_treeview(ID_TREVIEW_PEOPLE, data)
             self.set_enable_by_id(ID_BUTTON_DELETE, False)
@@ -122,6 +125,7 @@ class PeopleDialog(Dialog):
         if event == 'close':
             event = {}
             event['action'] = 'exit'
+            event['data'] = None
             return self.__on_event_listener(event)
         
         if event == 'select':
@@ -132,9 +136,10 @@ class PeopleDialog(Dialog):
             self.set_enable_by_id(ID_BUTTON_DELETE, event_data != None)
 
         if event == 'click' and id == ID_BUTTON_DELETE:
-            event = {}
-            data = {}
-            event['action'] = 'delete'
-            event['data'] = self.get_item_selected(ID_TREVIEW_PEOPLE)
-            data = self.__on_event_listener(event)
-            self.set_data_to_treeview(ID_TREVIEW_PEOPLE, data)
+            yesno = YesNoDialog(self, 'WARNING!', f'are you sure?')
+            if yesno.show():
+                event = {}
+                event['action'] = 'delete'
+                event['data'] = self.get_item_selected(ID_TREVIEW_PEOPLE)[0]
+                data = self.__on_event_listener(event)
+                self.set_data_to_treeview(ID_TREVIEW_PEOPLE, data)
